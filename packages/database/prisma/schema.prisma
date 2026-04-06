@@ -1,0 +1,479 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["auth", "public_cms", "intake", "booking", "cases", "documents", "messaging", "billing", "notifications", "admin"]
+}
+
+// -------------------------------------------------------------
+// AUTHENTICATION MODULE (Schema: auth)
+// -------------------------------------------------------------
+model User {
+  id              String    @id @default(uuid()) @db.Uuid
+  email           String    @unique
+  phone           String?   @unique
+  password_hash   String
+  role            Role      @default(VISITOR)
+  is_verified     Boolean   @default(false)
+  is_active       Boolean   @default(true)
+  two_fa_enabled  Boolean   @default(false)
+  two_fa_secret   String?
+  last_login_at   DateTime?
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  client_profile   ClientProfile?
+  advocate_profile AdvocateProfile?
+
+  @@schema("auth")
+}
+
+enum Role {
+  VISITOR
+  CLIENT
+  ADVOCATE
+  ADMIN
+
+  @@schema("auth")
+}
+
+// -------------------------------------------------------------
+// PUBLIC CMS MODULE (Schema: public_cms)
+// -------------------------------------------------------------
+model ClientProfile {
+  id                  String    @id @default(uuid()) @db.Uuid
+  user_id             String    @unique @db.Uuid
+  user                User      @relation(fields: [user_id], references: [id])
+  full_name           String
+  address             String?
+  id_type             IdType    @default(OTHER)
+  id_number_encrypted String?
+  date_of_birth       DateTime?
+  preferred_language  String    @default("en")
+  created_at          DateTime  @default(now())
+
+  @@schema("public_cms")
+}
+
+enum IdType {
+  AADHAAR
+  PAN
+  PASSPORT
+  OTHER
+
+  @@schema("public_cms")
+}
+
+model AdvocateProfile {
+  id                      String    @id @default(uuid()) @db.Uuid
+  user_id                 String    @unique @db.Uuid
+  user                    User      @relation(fields: [user_id], references: [id])
+  full_name               String
+  bar_registration_number String    @unique
+  enrollment_date         DateTime
+  high_court              String
+  practice_areas          String[]
+  bio                     String?   @db.Text
+  profile_photo_url       String?
+  office_address          String?
+  languages_spoken        String[]
+  education               Json?
+  awards                  Json?
+  consultation_fee_inr    Int
+  created_at              DateTime  @default(now())
+  updated_at              DateTime  @updatedAt
+
+  @@schema("public_cms")
+}
+
+model Testimonial {
+  id           String    @id @default(uuid()) @db.Uuid
+  author_name  String
+  content      String    @db.Text
+  is_approved  Boolean   @default(false)
+  submitted_at DateTime  @default(now())
+
+  @@schema("public_cms")
+}
+
+// -------------------------------------------------------------
+// INTAKE MODULE (Schema: intake)
+// -------------------------------------------------------------
+model Case {
+  id                       String        @id @default(uuid()) @db.Uuid
+  case_number              String        @unique
+  client_id                String        @db.Uuid
+  advocate_id              String        @db.Uuid
+  matter_type              MatterType
+  title                    String
+  description              String        @db.Text
+  status                   CaseStatus    @default(NEW)
+  urgency                  UrgencyLevel  @default(MEDIUM)
+  opposing_party_name      String?
+  opposing_party_advocate  String?
+  court_name               String?
+  cnr_number               String?
+  next_hearing_date        DateTime?
+  limitation_date          DateTime?
+  engagement_letter_signed Boolean       @default(false)
+  engagement_letter_url    String?
+  conflict_check_result    ConflictResult @default(PENDING)
+  conflict_check_at        DateTime?
+  internal_notes           String?       @db.Text
+  closed_at                DateTime?
+  created_at               DateTime      @default(now())
+  updated_at               DateTime      @updatedAt
+
+  @@schema("cases")
+}
+
+enum MatterType {
+  CIVIL
+  CRIMINAL
+  FAMILY
+  CORPORATE
+  LABOUR
+  CONSUMER
+  OTHER
+
+  @@schema("cases")
+}
+
+enum CaseStatus {
+  NEW
+  UNDER_REVIEW
+  CONFLICT_FLAGGED
+  ACCEPTED
+  ACTIVE
+  ON_HOLD
+  CLOSED
+  REJECTED
+
+  @@schema("cases")
+}
+
+enum UrgencyLevel {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+
+  @@schema("cases")
+}
+
+enum ConflictResult {
+  CLEAR
+  FLAGGED
+  CONFLICT
+  PENDING
+
+  @@schema("cases")
+}
+
+model ConflictCheckRecord {
+  id                  String         @id @default(uuid()) @db.Uuid
+  checked_by          String         @db.Uuid
+  reference_type      String         // INQUIRY | APPOINTMENT
+  reference_id        String         @db.Uuid
+  party_names_checked String[]
+  matched_case_ids    String[]
+  result              ConflictResult @default(PENDING)
+  notes               String?        @db.Text
+  checked_at          DateTime       @default(now())
+
+  @@schema("intake")
+}
+
+// -------------------------------------------------------------
+// BOOKING MODULE (Schema: booking)
+// -------------------------------------------------------------
+model Appointment {
+  id                    String         @id @default(uuid()) @db.Uuid
+  visitor_name          String
+  visitor_email         String
+  visitor_phone         String
+  advocate_id           String         @db.Uuid
+  consultation_type     ConsultationType
+  matter_summary        String         @db.Text
+  opposing_party_name   String?
+  slot_start            DateTime
+  slot_end              DateTime
+  status                AppointmentStatus @default(PENDING_PAYMENT)
+  payment_id            String?        @db.Uuid
+  video_link            String?
+  conflict_check_result ConflictResult @default(PENDING)
+  converted_to_case_id  String?        @db.Uuid
+  created_at            DateTime       @default(now())
+  updated_at            DateTime       @updatedAt
+
+  @@schema("booking")
+}
+
+enum ConsultationType {
+  IN_PERSON
+  PHONE
+  VIDEO
+
+  @@schema("booking")
+}
+
+enum AppointmentStatus {
+  PENDING_PAYMENT
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+
+  @@schema("booking")
+}
+
+// -------------------------------------------------------------
+// DOCUMENTS MODULE (Schema: documents)
+// -------------------------------------------------------------
+model Document {
+  id                  String         @id @default(uuid()) @db.Uuid
+  case_id             String         @db.Uuid
+  uploaded_by         String         @db.Uuid
+  file_name           String
+  file_type           FileType
+  file_size_bytes     Int
+  storage_key         String
+  storage_bucket      String
+  version             Int            @default(1)
+  previous_version_id String?        @db.Uuid
+  virus_scan_status   VirusScanStatus @default(PENDING)
+  is_confidential     Boolean        @default(true)
+  request_id          String?        @db.Uuid
+  created_at          DateTime       @default(now())
+
+  @@schema("documents")
+}
+
+enum FileType {
+  PDF
+  JPEG
+  PNG
+  DOCX
+  XLSX
+
+  @@schema("documents")
+}
+
+enum VirusScanStatus {
+  PENDING
+  CLEAN
+  INFECTED
+
+  @@schema("documents")
+}
+
+model DocumentRequest {
+  id          String   @id @default(uuid()) @db.Uuid
+  case_id     String   @db.Uuid
+  description String
+  status      RequestStatus @default(PENDING)
+  created_at  DateTime @default(now())
+
+  @@schema("documents")
+}
+
+enum RequestStatus {
+  PENDING
+  FULFILLED
+
+  @@schema("documents")
+}
+
+// -------------------------------------------------------------
+// MESSAGING MODULE (Schema: messaging)
+// -------------------------------------------------------------
+model Message {
+  id                String    @id @default(uuid()) @db.Uuid
+  case_id           String    @db.Uuid
+  sender_id         String    @db.Uuid
+  content_encrypted String    @db.Text
+  is_read           Boolean   @default(false)
+  read_at           DateTime?
+  attachment_id     String?   @db.Uuid
+  created_at        DateTime  @default(now())
+
+  @@schema("messaging")
+}
+
+// -------------------------------------------------------------
+// BILLING MODULE (Schema: billing)
+// -------------------------------------------------------------
+model Invoice {
+  id               String        @id @default(uuid()) @db.Uuid
+  invoice_number   String        @unique
+  case_id          String        @db.Uuid
+  client_id        String        @db.Uuid
+  advocate_id      String        @db.Uuid
+  status           InvoiceStatus @default(DRAFT)
+  line_items       Json
+  subtotal_inr     Int
+  gst_rate_percent Decimal       @default(18.00) @db.Decimal(5, 2)
+  gst_amount_inr   Int
+  total_inr        Int
+  amount_paid_inr  Int           @default(0)
+  due_date         DateTime
+  issued_at        DateTime?
+  paid_at          DateTime?
+  pdf_url          String?
+  created_at       DateTime      @default(now())
+  updated_at       DateTime      @updatedAt
+
+  @@schema("billing")
+}
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  PARTIALLY_PAID
+  PAID
+  OVERDUE
+  CANCELLED
+
+  @@schema("billing")
+}
+
+model TimeEntry {
+  id                String       @id @default(uuid()) @db.Uuid
+  case_id           String       @db.Uuid
+  advocate_id       String       @db.Uuid
+  invoice_id        String?      @db.Uuid
+  activity_type     ActivityType
+  description       String
+  duration_minutes  Int
+  rate_per_hour_inr Int
+  amount_inr        Int
+  billed            Boolean      @default(false)
+  entry_date        DateTime
+  created_at        DateTime     @default(now())
+
+  @@schema("billing")
+}
+
+enum ActivityType {
+  DRAFTING
+  RESEARCH
+  COURT_ATTENDANCE
+  CLIENT_CALL
+  CORRESPONDENCE
+  REVIEW
+  OTHER
+
+  @@schema("billing")
+}
+
+model Payment {
+  id                 String        @id @default(uuid()) @db.Uuid
+  reference_type     ReferenceType
+  reference_id       String        @db.Uuid
+  payer_id           String?       @db.Uuid
+  gateway            GatewayType
+  gateway_order_id   String
+  gateway_payment_id String?
+  amount_inr         Int
+  currency           String        @default("INR")
+  status             PaymentStatus @default(CREATED)
+  failure_reason     String?
+  receipt_url        String?
+  created_at         DateTime      @default(now())
+  updated_at         DateTime      @updatedAt
+
+  @@schema("billing")
+}
+
+enum ReferenceType {
+  APPOINTMENT
+  INVOICE
+
+  @@schema("billing")
+}
+
+enum GatewayType {
+  RAZORPAY
+  PAYU
+
+  @@schema("billing")
+}
+
+enum PaymentStatus {
+  CREATED
+  AUTHORIZED
+  CAPTURED
+  FAILED
+  REFUNDED
+
+  @@schema("billing")
+}
+
+// -------------------------------------------------------------
+// NOTIFICATION MODULE (Schema: notifications)
+// -------------------------------------------------------------
+model Notification {
+  id          String   @id @default(uuid()) @db.Uuid
+  user_id     String   @db.Uuid
+  type        NotifType
+  event       String
+  subject     String?
+  body        String   @db.Text
+  status      NotifStatus @default(QUEUED)
+  sent_at     DateTime?
+  retry_count Int      @default(0)
+  metadata    Json?
+  created_at  DateTime @default(now())
+
+  @@schema("notifications")
+}
+
+enum NotifType {
+  EMAIL
+  SMS
+  WHATSAPP
+  IN_APP
+
+  @@schema("notifications")
+}
+
+enum NotifStatus {
+  QUEUED
+  SENT
+  FAILED
+  DELIVERED
+
+  @@schema("notifications")
+}
+
+// -------------------------------------------------------------
+// ADMIN & AUDIT MODULE (Schema: admin)
+// -------------------------------------------------------------
+model AuditLog {
+  id            String   @id @default(uuid()) @db.Uuid
+  actor_id      String?  @db.Uuid
+  actor_role    ActorRole
+  action        String
+  resource_type String
+  resource_id   String?  @db.Uuid
+  ip_address    String   // mapped from INET conceptually
+  user_agent    String?
+  metadata      Json?
+  created_at    DateTime @default(now())
+
+  @@schema("admin")
+}
+
+enum ActorRole {
+  VISITOR
+  CLIENT
+  ADVOCATE
+  ADMIN
+  SYSTEM
+
+  @@schema("admin")
+}

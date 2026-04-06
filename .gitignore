@@ -1,0 +1,13 @@
+node_modules
+.next
+.turbo
+dist
+build
+.env
+.env.local
+.DS_Store
+apps/web/.env
+apps/web/.env.local
+packages/database/.env
+packages/database/.env.local
+apps/*/node_modules
