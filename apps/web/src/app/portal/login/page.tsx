@@ -167,9 +167,16 @@ export default function LoginPage() {
         .demo-btn:hover { border-color: rgba(99,102,241,0.4) !important; background: rgba(255,255,255,0.06) !important; }
         .submit-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 14px 36px rgba(59,130,246,0.45) !important; }
         .submit-btn:disabled { opacity: 0.65; cursor: not-allowed; }
+
+        /* Mobile Login Adjustments */
+        @media (max-width: 850px) {
+          .login-page { flex-direction: column !important; overflow-y: auto !important; }
+          .login-left { display: none !important; }
+          .login-right { padding: 32px 24px !important; align-items: flex-start !important; padding-top: 64px !important; }
+        }
       `}</style>
 
-      <div style={s.page}>
+      <div style={s.page} className="login-page">
 
         {/* ── Ambient blobs ── */}
         <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", overflow: "hidden" }}>
@@ -179,7 +186,7 @@ export default function LoginPage() {
         </div>
 
         {/* ── Left branding panel ── */}
-        <motion.div style={{ ...s.left, zIndex: 1 }}
+        <motion.div style={{ ...s.left, zIndex: 1 }} className="login-left"
           initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7 }}>
 
           {/* Top decorative orb */}
@@ -239,7 +246,7 @@ export default function LoginPage() {
         </motion.div>
 
         {/* ── Right login panel ── */}
-        <div style={{ ...s.right, zIndex: 1 }}>
+        <div style={{ ...s.right, zIndex: 1 }} className="login-right">
           <motion.div style={s.formBox}
             initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.15 }}>
 
