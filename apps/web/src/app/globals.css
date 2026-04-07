@@ -181,3 +181,15 @@ body {
   .testimonials-grid { grid-template-columns: 1fr !important; gap: 20px !important; }
   .footer-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
 }
+
+/* Additional Mobile Grid Fixes */
+@media (max-width: 850px) {
+  .quick-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+}

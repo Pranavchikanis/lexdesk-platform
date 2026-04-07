@@ -329,7 +329,7 @@ export default function Home() {
 
                 <div style={s.divider} />
 
-                <div style={s.quickGrid}>
+                <div style={s.quickGrid} className="quick-grid">
                   {[{ icon: FileText, label: "Documents", val: "12 files" }, { icon: MessageSquare, label: "Messages", val: "3 new" }, { icon: CreditCard, label: "Invoices", val: "₹24,500" }].map(({ icon: Icon, label, val }) => (
                     <div key={label} style={s.quickItem}>
                       <Icon size={15} color="#60a5fa" style={{ margin: "0 auto" }} />
@@ -349,7 +349,7 @@ export default function Home() {
 
         {/* ── Stats ── */}
         <div style={{ ...s.statsBar, position: "relative", zIndex: 1 }}>
-          <div style={s.statsGrid}>
+          <div style={s.statsGrid} className="stats-grid">
             {stats.map(({ value, label, sub }, i) => (
               <Reveal key={label} delay={i * 0.08}>
                 <div style={s.statCard} className="stat-item">
@@ -463,7 +463,7 @@ export default function Home() {
 
         {/* ── Footer ── */}
         <footer style={{ ...s.footer, position: "relative", zIndex: 1 }} id="contact">
-          <div style={s.footerGrid}>
+          <div style={s.footerGrid} className="footer-grid">
             <div style={s.footerBrand}>
               <div style={s.footerLogoRow}>
                 <div style={s.logoIcon}><Scale size={16} color="#60a5fa" /></div>
