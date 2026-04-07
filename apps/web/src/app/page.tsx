@@ -479,13 +479,17 @@ export default function Home() {
             <div>
               <div style={s.footerColTitle}>Platform</div>
               <div style={s.footerLinks}>
-                {["Client Portal", "Book Consultation", "Document Vault", "Secure Messaging", "Invoice Portal"].map(l => <a key={l} style={s.footerLink} className="footer-link">{l}</a>)}
+                <a style={s.footerLink} className="footer-link" onClick={goPortal} href="#!">Client Portal</a>
+                <a style={s.footerLink} className="footer-link" onClick={openModal} href="#!">Book Consultation</a>
+                <a style={s.footerLink} className="footer-link" href="#!">Document Vault</a>
+                <a style={s.footerLink} className="footer-link" href="#!">Secure Messaging</a>
+                <a style={s.footerLink} className="footer-link" href="#!">Invoice Portal</a>
               </div>
             </div>
             <div>
               <div style={s.footerColTitle}>Legal</div>
               <div style={s.footerLinks}>
-                {["Privacy Policy", "Terms of Service", "DPDPA Compliance", "Bar Council Disclosure", "Refund Policy"].map(l => <a key={l} style={s.footerLink} className="footer-link">{l}</a>)}
+                {["Privacy Policy", "Terms of Service", "DPDPA Compliance", "Bar Council Disclosure", "Refund Policy"].map(l => <a key={l} href="#!" style={s.footerLink} className="footer-link">{l}</a>)}
               </div>
             </div>
           </div>
