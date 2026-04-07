@@ -198,7 +198,7 @@ export default function PortalPage() {
 
         {/* Navbar */}
         <nav style={s.nav}>
-          <div style={s.logo}>
+          <div style={{ ...s.logo, cursor: 'pointer' }} onClick={() => router.push('/')}>
             <div style={s.logoIcon}><Scale size={16} color="#60a5fa" /></div>
             <span style={s.logoText}>LexDesk<span style={s.logoAccent}>.Law</span></span>
             <div style={{ height: 16, width: 1, background: "rgba(255,255,255,0.1)", margin: "0 8px" }} />
