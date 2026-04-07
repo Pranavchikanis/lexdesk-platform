@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   Scale, Users, Briefcase, FileText, Bell, LogOut, Search,
   ChevronDown, Calendar, CheckSquare, MessageSquare, Plus,
@@ -55,19 +54,27 @@ export default function AdvocateDashboard() {
     
     setUser(currentUser);
 
-    // Fetch firm data
+    const safeJson = async (res: Response) => {
+      if (!res.ok) return res.headers.get('content-type')?.includes('json') ? res.json().catch(() => ({})) : {};
+      try { return await res.json(); } catch { return {}; }
+    };
+    const safeJsonArr = async (res: Response) => {
+      if (!res.ok) return [];
+      try { const d = await res.json(); return Array.isArray(d) ? d : []; } catch { return []; }
+    };
+
+    const API = process.env.NEXT_PUBLIC_API_URL || "https://lexdesk-platform-production.up.railway.app";
     Promise.all([
-      fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3005"}/demo-dashboard-stats`).then(r => r.json()).catch(() => ({})),
-      fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3005"}/demo-all-cases`).then(r => r.json()).catch(() => []),
-      fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3003"}/demo-inquiries`).then(r => r.json()).catch(() => ({ inquiries: [] })),
-      fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3005"}/api/v1/cases`).then(r => r.json()).catch(() => [])
+      fetch(`${API}/demo-dashboard-stats`).then(safeJson).catch(() => ({})),
+      fetch(`${API}/demo-all-cases`).then(safeJsonArr).catch(() => []),
+      fetch(`${API}/demo-inquiries`).then(r => safeJson(r)).catch(() => ({ inquiries: [] })),
+      fetch(`${API}/api/v1/cases`).then(safeJsonArr).catch(() => []),
     ]).then(([statsData, casesData, inquiriesData, dbCasesData]) => {
-      setStats(statsData);
-      setAllCases(casesData);
-      setInquiries(inquiriesData.inquiries || []);
+      setStats(statsData || {});
+      setAllCases(Array.isArray(casesData) ? casesData : []);
+      setInquiries(Array.isArray((inquiriesData as any)?.inquiries) ? (inquiriesData as any).inquiries : []);
       setDbCases(Array.isArray(dbCasesData) ? dbCasesData : []);
-      setLoading(false);
-    });
+    }).catch(() => {}).finally(() => setLoading(false));
   }, [router]);
 
   const handleLogout = () => {
@@ -143,22 +150,45 @@ export default function AdvocateDashboard() {
         .nav-btn:hover { background: rgba(255,255,255,0.04) !important; color: #fff !important; }
         .k-card:hover { border-color: rgba(139,92,246,0.3) !important; background: rgba(255,255,255,0.05) !important; }
       `}</style>
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes adv-fade { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+        .nav-btn:hover { background: rgba(255,255,255,0.04) !important; color: #fff !important; }
+        .k-card:hover { border-color: rgba(139,92,246,0.3) !important; background: rgba(255,255,255,0.05) !important; }
+        /* Advocate Mobile Responsive */
+        @media (max-width: 850px) {
+          .adv-page { flex-direction: column !important; }
+          .adv-sidebar { width: 100% !important; border-right: none !important; border-bottom: 1px solid rgba(255,255,255,0.06) !important; flex-direction: row !important; align-items: center !important; padding: 0 !important; }
+          .adv-brand { padding: 12px 16px !important; border-bottom: none !important; margin-bottom: 0 !important; flex-shrink: 0; }
+          .adv-navlist { display: flex !important; flex-direction: row !important; overflow-x: auto !important; padding: 0 8px !important; flex: 1 !important; gap: 0 !important; }
+          .adv-navbtn { width: auto !important; padding: 10px 12px !important; border-radius: 8px !important; white-space: nowrap !important; font-size: 12px !important; flex-shrink: 0 !important; }
+          .adv-navbtn span.nav-label { display: none !important; }
+          .adv-profile { display: none !important; }
+          .adv-header { padding: 0 16px !important; height: 56px !important; }
+          .adv-search { display: none !important; }
+          .adv-content { padding: 16px !important; }
+          .adv-kpi-grid { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+          .adv-main { height: auto !important; }
+          .mobile-logout-adv { display: flex !important; }
+        }
+        .mobile-logout-adv { display: none; align-items: center; gap: 6px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px; padding: 6px 10px; font-size: 12px; font-weight: 600; color: #f87171; cursor: pointer; flex-shrink: 0; }
+      `}</style>
       
-      <div style={s.page}>
+      <div style={s.page} className="adv-page">
         {/* SIDEBAR */}
-        <aside style={s.sidebar}>
-          <div style={s.brand}>
+        <aside style={s.sidebar} className="adv-sidebar">
+          <div style={s.brand} className="adv-brand">
             <div style={s.logoIcon}><Scale size={16} color="#c084fc" /></div>
             <span style={s.logoText}>LexDesk<span style={{ color: "rgba(255,255,255,0.3)" }}>.Law</span></span>
             <span style={s.logoBadge}>PRO</span>
           </div>
 
-          <div style={s.navList}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.2)", textTransform: "uppercase", letterSpacing: "0.06em", margin: "16px 12px 12px" }}>Firm Operations</div>
+          <div style={s.navList} className="adv-navlist">
+            <div style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.2)", textTransform: "uppercase", letterSpacing: "0.06em", margin: "16px 12px 12px" }} className="adv-section-label">Firm Operations</div>
             {TABS.map(t => (
-              <button key={t.id} className="nav-btn" style={s.navBtn(activeTab === t.id)} onClick={() => setActiveTab(t.id)}>
+              <button key={t.id} className="nav-btn adv-navbtn" style={s.navBtn(activeTab === t.id)} onClick={() => setActiveTab(t.id)}>
                 <t.icon size={16} />
-                <span style={{ flex: 1, textAlign: "left" }}>{t.label}</span>
+                <span style={{ flex: 1, textAlign: "left" }} className="nav-label">{t.label}</span>
                 {t.badge && (
                   <div style={{ background: "#c084fc", color: "#fff", fontSize: 9, padding: "1px 6px", borderRadius: 9999 }}>{t.badge}</div>
                 )}
@@ -166,7 +196,7 @@ export default function AdvocateDashboard() {
             ))}
           </div>
 
-          <div style={s.profileWrap}>
+          <div style={s.profileWrap} className="adv-profile">
             <div style={s.avatar}>{user?.avatar_initials}</div>
             <div style={{ flex: 1, overflow: "hidden" }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: "#fff", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>{user?.full_name}</div>
@@ -176,12 +206,16 @@ export default function AdvocateDashboard() {
               <LogOut size={16} />
             </button>
           </div>
+          {/* Mobile sign out */}
+          <button className="mobile-logout-adv" onClick={handleLogout} title="Sign Out">
+            <LogOut size={13} /> Sign Out
+          </button>
         </aside>
 
         {/* MAIN AREA */}
-        <main style={s.main}>
-          <header style={s.header}>
-            <div style={s.searchBar}>
+        <main style={s.main} className="adv-main">
+          <header style={s.header} className="adv-header">
+            <div style={s.searchBar} className="adv-search">
               <Search size={14} color="rgba(255,255,255,0.4)" />
               <input type="text" style={s.searchInput} placeholder="Search cases, clients, or documents..." />
               <div style={{ fontSize: 10, background: "rgba(255,255,255,0.1)", padding: "2px 6px", borderRadius: 4, color: "rgba(255,255,255,0.5)" }}>⌘K</div>
@@ -196,9 +230,8 @@ export default function AdvocateDashboard() {
             </div>
           </header>
 
-          <div style={s.content}>
-            <AnimatePresence mode="wait">
-              <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
+          <div style={s.content} className="adv-content">
+            <div key={activeTab} style={{ animation: "adv-fade 0.2s ease" }}>
                 
                 {/* ── COMMAND CENTER ── */}
                 {activeTab === "command" && (
@@ -206,7 +239,7 @@ export default function AdvocateDashboard() {
                     <div style={s.pageTitle}>Command Center</div>
                     <div style={s.pageSub}>Monday, April 6, 2026. You have 3 hearings scheduled today.</div>
                     
-                    <div style={s.kpiGrid}>
+                    <div style={s.kpiGrid} className="adv-kpi-grid">
                       {[
                         { l: "Total Active Cases", v: stats.active_cases || 0, c: "#c084fc" },
                         { l: "Pending Intakes", v: stats.pending_intakes || 0, c: "#fbbf24" },
@@ -269,7 +302,7 @@ export default function AdvocateDashboard() {
                             </div>
                             <div style={{ flex: 1, background: "rgba(0,0,0,0.2)", borderRadius: 16, padding: "12px", border: "1px dashed rgba(255,255,255,0.05)" }}>
                               {stageCases.map((c, i) => (
-                                <motion.div key={c.id} className="k-card" style={s.kanbanCard} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+                                <div key={c.id} className="k-card" style={{ ...s.kanbanCard, animation: `adv-fade ${0.2 + i * 0.05}s ease` }}>
                                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
                                     <span style={{ fontSize: 10, color: "rgba(255,255,255,0.4)" }}>{c.id}</span>
                                     <span style={s.tag(colors[stage])}>{c.status}</span>
@@ -283,7 +316,7 @@ export default function AdvocateDashboard() {
                                     </div>
                                     <div style={{ width: 24, height: 24, borderRadius: "50%", background: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9 }}>{c.client.charAt(0)}</div>
                                   </div>
-                                </motion.div>
+                                </div>
                               ))}
                             </div>
                           </div>
@@ -473,8 +506,7 @@ export default function AdvocateDashboard() {
                     </div>
                   </div>
                 )}
-              </motion.div>
-            </AnimatePresence>
+            </div>
           </div>
         </main>
       </div>
