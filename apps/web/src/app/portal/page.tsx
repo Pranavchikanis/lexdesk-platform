@@ -46,10 +46,10 @@ export default function PortalPage() {
       
       // Fetch demo data concurrently
       Promise.all([
-        fetch(`${process.env.NEXT_PUBLIC_CASE_URL || "http://localhost:3005"}/demo-cases`).then(r => r.json()).catch(() => []),
-        fetch(`${process.env.NEXT_PUBLIC_DOCUMENT_URL || "http://localhost:3006"}/demo-documents`).then(r => r.json()).catch(() => []),
-        fetch(`${process.env.NEXT_PUBLIC_MESSAGING_URL || "http://localhost:3007"}/demo-messages`).then(r => r.json()).catch(() => []),
-        fetch(`${process.env.NEXT_PUBLIC_BILLING_URL || "http://localhost:3008"}/api/v1/billing/invoices?client_id=` + currentUser?.id).then(r => r.json()).catch(() => [])
+        fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3005"}/demo-cases`).then(r => r.json()).catch(() => []),
+        fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3006"}/demo-documents`).then(r => r.json()).catch(() => []),
+        fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3007"}/demo-messages`).then(r => r.json()).catch(() => []),
+        fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3008"}/api/v1/billing/invoices?client_id=` + currentUser?.id).then(r => r.json()).catch(() => [])
       ]).then(([casesData, docsData, msgsData, invData]) => {
         setCases(casesData);
         setDocs(docsData);
@@ -65,7 +65,7 @@ export default function PortalPage() {
     if (!newMessage.trim()) return;
     setSendingMessage(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_MESSAGING_URL || "http://localhost:3007"}/demo-messages`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3007"}/demo-messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: newMessage, sender: user?.full_name })
@@ -333,7 +333,7 @@ export default function PortalPage() {
                         if (!file) return;
                         
                         // Mock upload
-                        const res = await fetch(`${process.env.NEXT_PUBLIC_DOCUMENT_URL || "http://localhost:3006"}/demo-upload`, {
+                        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3006"}/demo-upload`, {
                           method: "POST",
                           headers: { "Content-Type": "application/json" },
                           body: JSON.stringify({ file_name: file.name, file_size: (file.size / 1024 / 1024).toFixed(1) + " MB", case_id: "C-2026-001" })
@@ -470,7 +470,7 @@ export default function PortalPage() {
                                       disabled={payLoading === inv.id}
                                       onClick={async () => {
                                         setPayLoading(inv.id);
-                                        const res = await fetch(`${process.env.NEXT_PUBLIC_BILLING_URL || "http://localhost:3008"}/api/v1/billing/invoices/${inv.id}/pay`, { method: "POST" });
+                                        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3008"}/api/v1/billing/invoices/${inv.id}/pay`, { method: "POST" });
                                         if (res.ok) {
                                           const { invoice } = await res.json();
                                           setInvoices(invoices.map(i => i.id === invoice.id ? invoice : i));

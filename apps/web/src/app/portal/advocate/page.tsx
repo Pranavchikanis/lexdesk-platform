@@ -57,10 +57,10 @@ export default function AdvocateDashboard() {
 
     // Fetch firm data
     Promise.all([
-      fetch(`${process.env.NEXT_PUBLIC_CASE_URL || "http://localhost:3005"}/demo-dashboard-stats`).then(r => r.json()).catch(() => ({})),
-      fetch(`${process.env.NEXT_PUBLIC_CASE_URL || "http://localhost:3005"}/demo-all-cases`).then(r => r.json()).catch(() => []),
-      fetch(`${process.env.NEXT_PUBLIC_INTAKE_URL || "http://localhost:3003"}/demo-inquiries`).then(r => r.json()).catch(() => ({ inquiries: [] })),
-      fetch(`${process.env.NEXT_PUBLIC_CASE_URL || "http://localhost:3005"}/api/v1/cases`).then(r => r.json()).catch(() => [])
+      fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3005"}/demo-dashboard-stats`).then(r => r.json()).catch(() => ({})),
+      fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3005"}/demo-all-cases`).then(r => r.json()).catch(() => []),
+      fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3003"}/demo-inquiries`).then(r => r.json()).catch(() => ({ inquiries: [] })),
+      fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3005"}/api/v1/cases`).then(r => r.json()).catch(() => [])
     ]).then(([statsData, casesData, inquiriesData, dbCasesData]) => {
       setStats(statsData);
       setAllCases(casesData);
@@ -454,7 +454,7 @@ export default function AdvocateDashboard() {
                           onClick={async () => {
                             setInvLoading(true);
                             try {
-                              const res = await fetch(`${process.env.NEXT_PUBLIC_BILLING_URL || "http://localhost:3008"}/api/v1/billing/invoices`, {
+                              const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3008"}/api/v1/billing/invoices`, {
                                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ case_id: invCaseId, line_items: invItems, gst_rate_percent: invGstRate, due_date: invDueDate })
                               });

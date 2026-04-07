@@ -207,7 +207,7 @@ export default function InquiryModal({ open, onClose }: Props) {
     if (!form.consent_given) { setErrors({ consent_given: "You must consent to proceed" }); return; }
     setLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_INTAKE_URL || "http://localhost:3003"}/public-submit`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3003"}/public-submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
