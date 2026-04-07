@@ -42,6 +42,47 @@ app.post('/login', async (req, res) => {
     return res.status(400).json({ error: 'MISSING_FIELDS', message: 'Email and password are required.' });
   }
 
+  // ── Demo account fallback (works without DB) ──────────────────────────────
+  const DEMO_ACCOUNTS = [
+    {
+      email: 'client@lexdesk.law',
+      password: 'Client@123',
+      id: 'demo-client-001',
+      role: 'CLIENT',
+      full_name: 'Rahul Sharma',
+      avatar_initials: 'RS',
+    },
+    {
+      email: 'advocate@lexdesk.law',
+      password: 'Advocate@123',
+      id: 'demo-advocate-001',
+      role: 'ADVOCATE',
+      full_name: 'Adv. Priya Chikanis',
+      avatar_initials: 'PC',
+    },
+  ];
+  const demoUser = DEMO_ACCOUNTS.find(a => a.email === email && a.password === password);
+  if (demoUser) {
+    const accessToken = jwt.sign(
+      { sub: demoUser.id, role: demoUser.role, email: demoUser.email, name: demoUser.full_name },
+      JWT_SECRET,
+      { expiresIn: '8h' }
+    );
+    console.log(`[auth] Demo login: ${demoUser.email} (${demoUser.role})`);
+    return res.status(200).json({
+      success: true,
+      access_token: accessToken,
+      user: {
+        id: demoUser.id,
+        email: demoUser.email,
+        role: demoUser.role,
+        full_name: demoUser.full_name,
+        avatar_initials: demoUser.avatar_initials,
+      }
+    });
+  }
+  // ─────────────────────────────────────────────────────────────────────────
+
   try {
     const user = await prisma.user.findUnique({
       where: { email },
@@ -69,7 +110,6 @@ app.post('/login', async (req, res) => {
       initials = fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
     } else if (user.role === 'ADVOCATE' && user.advocate_profile) {
       fullName = user.advocate_profile.full_name;
-      // Exclude titles like "Adv." from initials
       const nameParts = fullName.replace('Adv. ', '').split(' ');
       initials = nameParts.map(n => n[0]).join('').substring(0, 2).toUpperCase();
     }
@@ -98,6 +138,7 @@ app.post('/login', async (req, res) => {
     res.status(500).json({ error: 'SERVER_ERROR', message: 'Internal server error' });
   }
 });
+
 
 // Token validation (no DB)
 app.get('/validate', (req, res) => {
