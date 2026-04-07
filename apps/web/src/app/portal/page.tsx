@@ -176,6 +176,20 @@ export default function PortalPage() {
         .msg-row:hover { border-color: rgba(59,130,246,0.3) !important; }
         .logout-btn:hover { background: rgba(239,68,68,0.12) !important; color: #f87171 !important; }
         .tab-btn:hover { color: rgba(255,255,255,0.7) !important; background: rgba(255,255,255,0.04) !important; }
+
+        /* Mobile Adjustments for Portal */
+        @media (max-width: 850px) {
+          .portal-layout { flex-direction: column !important; }
+          .portal-sidebar { width: 100% !important; border-right: none !important; border-bottom: 1px solid rgba(255,255,255,0.06) !important; padding: 12px 16px !important; }
+          .portal-user-card { display: none !important; }
+          .portal-tabs-container { display: flex !important; flex-direction: row !important; overflow-x: auto !important; gap: 8px !important; }
+          .portal-tab-btn { width: auto !important; padding: 8px 16px !important; border-left: none !important; border-bottom: 2px solid transparent !important; white-space: nowrap !important; }
+          .portal-tab-btn-active { border-bottom: 2px solid #3b82f6 !important; }
+          .portal-main { padding: 20px 16px !important; }
+          .summary-grid { grid-template-columns: 1fr !important; }
+          .portal-nav-right { gap: 8px !important; }
+          .logout-btn { display: none !important; } /* Hidden in top scroll, maybe move to header */
+        }
       `}</style>
 
       <div style={s.page}>
@@ -188,7 +202,7 @@ export default function PortalPage() {
             <div style={{ height: 16, width: 1, background: "rgba(255,255,255,0.1)", margin: "0 8px" }} />
             <span style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", fontWeight: 500 }}>Client Portal</span>
           </div>
-          <div style={s.navRight}>
+          <div style={s.navRight} className="portal-nav-right">
             <button style={s.navIconBtn} title="Notifications">
               <Bell size={16} />
               {unreadMsgs > 0 && <div style={{ position: "absolute", top: 6, right: 6, width: 7, height: 7, borderRadius: "50%", background: "#3b82f6", border: "1.5px solid #070b16" }} />}
@@ -198,12 +212,12 @@ export default function PortalPage() {
           </div>
         </nav>
 
-        <div style={s.layout}>
+        <div style={s.layout} className="portal-layout">
 
           {/* Sidebar */}
-          <aside style={s.sidebar}>
+          <aside style={s.sidebar} className="portal-sidebar">
             {/* User card */}
-            <div style={s.userCard}>
+            <div style={s.userCard} className="portal-user-card">
               <div style={s.userAvatar}>{user?.avatar_initials}</div>
               <div style={s.userName}>{user?.full_name}</div>
               <div style={s.userRole}>
@@ -213,15 +227,17 @@ export default function PortalPage() {
             </div>
 
             {/* Navigation tabs */}
-            {TABS.map(({ id, label, icon: Icon, badge }) => (
-              <button key={id} style={s.tabBtn(activeTab === id)} className="tab-btn" onClick={() => setActiveTab(id)}>
-                <Icon size={15} />
-                <span style={{ flex: 1, textAlign: "left" }}>{label}</span>
-                {badge && badge > 0 && (
-                  <div style={{ background: "#3b82f6", color: "#fff", fontSize: 10, fontWeight: 700, padding: "1px 6px", borderRadius: 9999 }}>{badge}</div>
-                )}
-              </button>
-            ))}
+            <div className="portal-tabs-container">
+              {TABS.map(({ id, label, icon: Icon, badge }) => (
+                <button key={id} style={s.tabBtn(activeTab === id)} className={`tab-btn portal-tab-btn ${activeTab === id ? 'portal-tab-btn-active' : ''}`} onClick={() => setActiveTab(id)}>
+                  <Icon size={15} />
+                  <span style={{ flex: 1, textAlign: "left" }}>{label}</span>
+                  {badge && badge > 0 && (
+                    <div style={{ background: "#3b82f6", color: "#fff", fontSize: 10, fontWeight: 700, padding: "1px 6px", borderRadius: 9999 }}>{badge}</div>
+                  )}
+                </button>
+              ))}
+            </div>
 
             <button style={s.logoutBtn} className="logout-btn" onClick={handleLogout}>
               <LogOut size={14} /> Sign Out
@@ -229,7 +245,7 @@ export default function PortalPage() {
           </aside>
 
           {/* Main content */}
-          <main style={s.main}>
+          <main style={s.main} className="portal-main">
             <motion.div key={activeTab} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
 
               {/* ── OVERVIEW ── */}
@@ -239,7 +255,7 @@ export default function PortalPage() {
                   <div style={s.pageSub}>Here's a summary of your active cases and recent activity.</div>
 
                   {/* Summary cards */}
-                  <div style={s.summaryGrid}>
+                  <div style={s.summaryGrid} className="summary-grid">
                     {[
                       { label: "Active Cases", val: activeCases.toString(), accent: "#3b82f6", icon: Gavel },
                       { label: "Documents", val: docs.length.toString(), accent: "#8b5cf6", icon: FileText },
@@ -500,3 +516,4 @@ export default function PortalPage() {
     </>
   );
 }
+
