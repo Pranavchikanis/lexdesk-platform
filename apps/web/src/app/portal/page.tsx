@@ -160,7 +160,7 @@ export default function PortalPage() {
   }
 
   const activeCases = cases.filter(c => c.status === "ACTIVE").length;
-  const unreadMsgs = messages.filter(m => m.unread).length;
+  const unreadMsgs = messages.filter(m => m.read === false).length;
   const pendingAmount = invoices.reduce((acc, inv) => acc + (inv.total_inr - inv.amount_paid_inr), 0);
   const totalBilled = invoices.reduce((acc, inv) => acc + inv.total_inr, 0);
   const amountPaid = invoices.reduce((acc, inv) => acc + inv.amount_paid_inr, 0);
@@ -186,10 +186,12 @@ export default function PortalPage() {
           .portal-tab-btn { width: auto !important; padding: 8px 16px !important; border-left: none !important; border-bottom: 2px solid transparent !important; white-space: nowrap !important; }
           .portal-tab-btn-active { border-bottom: 2px solid #3b82f6 !important; }
           .portal-main { padding: 20px 16px !important; }
-          .summary-grid { grid-template-columns: 1fr !important; }
+          .summary-grid { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
           .portal-nav-right { gap: 8px !important; }
-          .logout-btn { display: none !important; } /* Hidden in top scroll, maybe move to header */
+          .logout-btn { display: none !important; }
+          .mobile-signout-btn { display: flex !important; }
         }
+        .mobile-signout-btn { display: none; align-items: center; gap: 6px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px; padding: 7px 12px; font-size: 12px; font-weight: 600; color: #f87171; cursor: pointer; }
       `}</style>
 
       <div style={s.page}>
@@ -203,11 +205,14 @@ export default function PortalPage() {
             <span style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", fontWeight: 500 }}>Client Portal</span>
           </div>
           <div style={s.navRight} className="portal-nav-right">
-            <button style={s.navIconBtn} title="Notifications">
+            <button style={s.navIconBtn} title="Notifications" onClick={() => setActiveTab("messages")}>
               <Bell size={16} />
               {unreadMsgs > 0 && <div style={{ position: "absolute", top: 6, right: 6, width: 7, height: 7, borderRadius: "50%", background: "#3b82f6", border: "1.5px solid #070b16" }} />}
             </button>
-            <button style={s.navIconBtn} title="Settings"><Settings size={16} /></button>
+            <button style={s.navIconBtn} title="Settings" onClick={() => alert("Settings coming soon!")}><Settings size={16} /></button>
+            <button className="mobile-signout-btn" onClick={handleLogout} title="Sign Out">
+              <LogOut size={13} /> Sign Out
+            </button>
             <div style={s.avatarBtn}>{user?.avatar_initials ?? "?"}</div>
           </div>
         </nav>

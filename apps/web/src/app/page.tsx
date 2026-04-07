@@ -4,7 +4,7 @@ import { motion, useInView } from "framer-motion";
 import {
   Scale, ShieldCheck, Clock, ArrowRight, User,
   FileText, MessageSquare, CreditCard, Gavel,
-  Star, CheckCircle2, Phone, Mail, MapPin, ChevronRight
+  Star, CheckCircle2, Phone, Mail, MapPin, ChevronRight, Menu, X
 } from "lucide-react";
 import { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -65,10 +65,15 @@ function Reveal({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
 export default function Home() {
   const [scrolled, setScrolled] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
   const router = useRouter();
   const goPortal = () => router.push("/portal/login");
+  const scrollToPractice = () => {
+    document.getElementById('practice-areas')?.scrollIntoView({ behavior: 'smooth' });
+    setMobileMenuOpen(false);
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -225,6 +230,37 @@ export default function Home() {
         .btn-book:hover { box-shadow: 0 12px 36px rgba(59,130,246,0.5) !important; transform: translateY(-1px); }
         .btn-ghost:hover { background: rgba(255,255,255,0.1) !important; border-color: rgba(59,130,246,0.4) !important; }
         .btn-access:hover { box-shadow: 0 8px 24px rgba(59,130,246,0.4) !important; }
+        /* ── Hamburger mobile menu ── */
+        .nav-hamburger { display: none !important; }
+        .mobile-menu-overlay { display: none; }
+        @media (max-width: 768px) {
+          .nav-links-desktop { display: none !important; }
+          .nav-desktop-actions { display: none !important; }
+          .nav-hamburger { display: flex !important; align-items: center; justify-content: center; background: none; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px; cursor: pointer; color: #fff; }
+          .mobile-menu-overlay {
+            display: block;
+            position: fixed; top: 68px; left: 0; right: 0; bottom: 0;
+            background: rgba(7,11,22,0.97);
+            backdrop-filter: blur(20px);
+            z-index: 999;
+            padding: 24px;
+            overflow-y: auto;
+          }
+          .mobile-menu-links { display: flex; flex-direction: column; gap: 4px; margin-bottom: 24px; }
+          .mobile-menu-link { display: block; padding: 14px 16px; border-radius: 12px; color: rgba(255,255,255,0.7); font-size: 16px; font-weight: 500; text-decoration: none; border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02); }
+          .mobile-menu-link:active { background: rgba(59,130,246,0.1); }
+          .mobile-menu-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 8px 0 16px; }
+          .mobile-menu-btn { width: 100%; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; border: none; margin-bottom: 10px; }
+          .hero-container { flex-direction: column !important; padding-top: 90px !important; min-height: auto !important; gap: 40px !important; }
+          .hero-title { font-size: 36px !important; }
+          .hero-subtitle { font-size: 15px !important; }
+          .stats-grid { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
+          .features-grid { grid-template-columns: 1fr !important; }
+          .practice-container { flex-direction: column !important; }
+          .testimonials-grid { grid-template-columns: 1fr !important; }
+          .quick-grid { grid-template-columns: 1fr 1fr 1fr !important; }
+          .footer-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
+        }
       `}</style>
 
       <div style={s.page}>
@@ -250,12 +286,37 @@ export default function Home() {
                 <a key={l} href={`#${l.toLowerCase().replace(" ", "-")}`} style={s.navLink} className="footer-link">{l}</a>
               ))}
             </div>
-            <div style={s.navActions}>
+            <div style={s.navActions} className="nav-desktop-actions">
               <button style={s.btnPortal} onClick={goPortal}><User size={14} /> Client Portal</button>
               <button style={s.btnBook} className="btn-book" onClick={openModal}>Book Consultation</button>
             </div>
+            {/* Hamburger - mobile only */}
+            <button className="nav-hamburger" onClick={() => setMobileMenuOpen(v => !v)} aria-label="Menu">
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
           </div>
         </nav>
+
+        {/* Mobile dropdown menu */}
+        {mobileMenuOpen && (
+          <div className="mobile-menu-overlay">
+            <nav className="mobile-menu-links">
+              {[{ label: "Practice Areas", action: scrollToPractice }, { label: "Our Firm", href: "#our-firm" }, { label: "Testimonials", href: "#testimonials" }, { label: "Contact", href: "#contact" }].map(({ label, action, href }) => (
+                <a key={label} href={href || '#'} className="mobile-menu-link"
+                  onClick={(e) => { if(action) { e.preventDefault(); action(); } setMobileMenuOpen(false); }}>
+                  {label}
+                </a>
+              ))}
+            </nav>
+            <div className="mobile-menu-divider" />
+            <button className="mobile-menu-btn btn-book" style={{ background: "linear-gradient(135deg, #3b82f6, #6366f1)", color: "#fff" }} onClick={() => { goPortal(); setMobileMenuOpen(false); }}>
+              Client Portal
+            </button>
+            <button className="mobile-menu-btn btn-book" style={{ background: "rgba(255,255,255,0.07)", color: "#fff", border: "1px solid rgba(255,255,255,0.12)" }} onClick={() => { openModal(); setMobileMenuOpen(false); }}>
+              Book Consultation
+            </button>
+          </div>
+        )}
 
         {/* ── Hero ── */}
         <div style={{ position: "relative", zIndex: 1 }}>
@@ -283,7 +344,7 @@ export default function Home() {
                 <button style={s.btnPrimary} id="hero-submit-inquiry" className="btn-book" onClick={openModal}>
                   Submit Inquiry <ArrowRight size={16} />
                 </button>
-                <button style={s.btnGhost} id="hero-view-areas" className="btn-ghost">
+                <button style={s.btnGhost} id="hero-view-areas" className="btn-ghost" onClick={scrollToPractice}>
                   View Practice Areas
                 </button>
               </motion.div>
@@ -339,7 +400,7 @@ export default function Home() {
                   ))}
                 </div>
 
-                <button style={s.btnAccess} className="btn-access">
+                <button style={s.btnAccess} className="btn-access" onClick={goPortal}>
                   Access Your Portal <ArrowRight size={14} />
                 </button>
               </div>
