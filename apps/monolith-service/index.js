@@ -28,47 +28,47 @@ app.get('/health', (req, res) => {
 
 // Mount all microservices
 try {
-  app.use('/proxy-admin', require('../admin-service/index'));
+  app.use(require('../admin-service/index'));
 } catch (err) { console.error('Failed to load admin-service', err.message); }
 
 try {
-  app.use('/proxy-ai', require('../ai-service/index'));
+  app.use(require('../ai-service/index'));
 } catch (err) { console.error('Failed to load ai-service', err.message); }
 
 try {
-  app.use('/proxy-auth', require('../auth-service/index'));
+  app.use(require('../auth-service/index'));
 } catch (err) { console.error('Failed to load auth-service', err.message); }
 
 try {
-  app.use('/proxy-billing', require('../billing-service/index'));
+  app.use(require('../billing-service/index'));
 } catch (err) { console.error('Failed to load billing-service', err.message); }
 
 try {
-  app.use('/proxy-booking', require('../booking-service/index'));
+  app.use(require('../booking-service/index'));
 } catch (err) { console.error('Failed to load booking-service', err.message); }
 
 try {
-  app.use('/proxy-case', require('../case-service/index'));
+  app.use(require('../case-service/index'));
 } catch (err) { console.error('Failed to load case-service', err.message); }
 
 try {
-  app.use('/proxy-document', require('../document-service/index'));
+  app.use(require('../document-service/index'));
 } catch (err) { console.error('Failed to load document-service', err.message); }
 
 try {
-  app.use('/proxy-intake', require('../intake-service/index'));
+  app.use(require('../intake-service/index'));
 } catch (err) { console.error('Failed to load intake-service', err.message); }
 
 try {
-  app.use('/proxy-messaging', require('../messaging-service/index'));
+  app.use(require('../messaging-service/index'));
 } catch (err) { console.error('Failed to load messaging-service', err.message); }
 
 try {
-  app.use('/proxy-notification', require('../notification-service/index'));
+  app.use(require('../notification-service/index'));
 } catch (err) { console.error('Failed to load notification-service', err.message); }
 
 try {
-  app.use('/proxy-public', require('../public-service/index'));
+  app.use(require('../public-service/index'));
 } catch (err) { console.error('Failed to load public-service', err.message); }
 
 app.listen(PORT, () => {
