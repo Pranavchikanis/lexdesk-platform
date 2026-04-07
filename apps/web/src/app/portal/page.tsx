@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import {
   Scale, Gavel, FileText, MessageSquare, CreditCard,
   Bell, LogOut, Settings, ChevronRight, Clock, CheckCircle2,
@@ -40,24 +39,28 @@ export default function PortalPage() {
   useEffect(() => {
     if (!isLoggedIn()) {
       router.replace("/portal/login");
-    } else {
-      const currentUser = getUser();
-      setUser(currentUser);
-      
-      // Fetch demo data concurrently
-      Promise.all([
-        fetch(`${process.env.NEXT_PUBLIC_API_URL || "https://lexdesk-platform-production.up.railway.app"}/demo-cases`).then(r => r.json()).catch(() => []),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL || "https://lexdesk-platform-production.up.railway.app"}/demo-documents`).then(r => r.json()).catch(() => []),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL || "https://lexdesk-platform-production.up.railway.app"}/demo-messages`).then(r => r.json()).catch(() => []),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL || "https://lexdesk-platform-production.up.railway.app"}/api/v1/billing/invoices?client_id=` + currentUser?.id).then(r => r.json()).catch(() => [])
-      ]).then(([casesData, docsData, msgsData, invData]) => {
-        setCases(casesData);
-        setDocs(docsData);
-        setMessages(msgsData);
-        setInvoices(Array.isArray(invData) ? invData : []);
-        setLoading(false);
-      });
+      return;
     }
+    const currentUser = getUser();
+    setUser(currentUser);
+
+    const safeJson = async (res: Response) => {
+      if (!res.ok) return [];
+      try { return await res.json(); } catch { return []; }
+    };
+
+    const API = process.env.NEXT_PUBLIC_API_URL || "https://lexdesk-platform-production.up.railway.app";
+    Promise.all([
+      fetch(`${API}/demo-cases`).then(safeJson).catch(() => []),
+      fetch(`${API}/demo-documents`).then(safeJson).catch(() => []),
+      fetch(`${API}/demo-messages`).then(safeJson).catch(() => []),
+      fetch(`${API}/api/v1/billing/invoices?client_id=${currentUser?.id ?? 'demo'}`).then(safeJson).catch(() => []),
+    ]).then(([casesData, docsData, msgsData, invData]) => {
+      setCases(Array.isArray(casesData) ? casesData : []);
+      setDocs(Array.isArray(docsData) ? docsData : []);
+      setMessages(Array.isArray(msgsData) ? msgsData : []);
+      setInvoices(Array.isArray(invData) ? invData : []);
+    }).catch(() => {}).finally(() => setLoading(false));
   }, [router]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
@@ -172,6 +175,7 @@ export default function PortalPage() {
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: #070b16; }
         @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
         .case-card:hover { border-color: rgba(255,255,255,0.14) !important; background: rgba(255,255,255,0.04) !important; }
         .msg-row:hover { border-color: rgba(59,130,246,0.3) !important; }
         .logout-btn:hover { background: rgba(239,68,68,0.12) !important; color: #f87171 !important; }
@@ -251,7 +255,7 @@ export default function PortalPage() {
 
           {/* Main content */}
           <main style={s.main} className="portal-main">
-            <motion.div key={activeTab} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+            <div key={activeTab} style={{ animation: "fadeSlideIn 0.3s ease" }}>
 
               {/* ── OVERVIEW ── */}
               {activeTab === "overview" && (
@@ -514,7 +518,7 @@ export default function PortalPage() {
                 </>
               )}
 
-            </motion.div>
+            </div>
           </main>
         </div>
       </div>
