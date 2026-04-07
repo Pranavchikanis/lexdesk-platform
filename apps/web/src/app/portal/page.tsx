@@ -49,6 +49,37 @@ export default function PortalPage() {
       try { return await res.json(); } catch { return []; }
     };
 
+    // Normalize API fields → Portal UI expected fields
+    const normalizeCase = (c: any) => ({
+      id: c.case_number || c.id || '—',
+      title: c.title || 'Untitled Case',
+      status: c.status || 'UNKNOWN',
+      statusColor: c.status === 'ACTIVE' ? '#34d399' : c.status === 'UNDER_REVIEW' ? '#fbbf24' : '#94a3b8',
+      court: c.court_name || c.court || '—',
+      next_date: c.next_hearing || c.next_date || '—',
+      matter_type: c.matter_type || '—',
+      advocate: c.advocate || 'Adv. Rajan Sharma',
+    });
+
+    const normalizeMsg = (m: any) => ({
+      id: m.id,
+      from: m.sender || m.from || 'Advocate',
+      preview: (m.content || m.preview || '').slice(0, 120),
+      time: m.created_at ? new Date(m.created_at).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : (m.time || ''),
+      unread: m.read === false || m.unread === true,
+      role: m.role || 'ADVOCATE',
+      content: m.content || m.preview || '',
+    });
+
+    const normalizeDoc = (d: any) => ({
+      id: d.id,
+      title: d.title || d.name || 'Document',
+      type: d.type || 'PDF',
+      size_kb: d.size_kb || 0,
+      uploaded_at: d.uploaded_at || d.created_at || new Date().toISOString(),
+      case_id: d.case_id || '—',
+    });
+
     const API = process.env.NEXT_PUBLIC_API_URL || "https://lexdesk-platform-production.up.railway.app";
     Promise.all([
       fetch(`${API}/demo-cases`).then(safeJson).catch(() => []),
@@ -56,11 +87,12 @@ export default function PortalPage() {
       fetch(`${API}/demo-messages`).then(safeJson).catch(() => []),
       fetch(`${API}/api/v1/billing/invoices?client_id=${currentUser?.id ?? 'demo'}`).then(safeJson).catch(() => []),
     ]).then(([casesData, docsData, msgsData, invData]) => {
-      setCases(Array.isArray(casesData) ? casesData : []);
-      setDocs(Array.isArray(docsData) ? docsData : []);
-      setMessages(Array.isArray(msgsData) ? msgsData : []);
+      setCases(Array.isArray(casesData) ? casesData.map(normalizeCase) : []);
+      setDocs(Array.isArray(docsData) ? docsData.map(normalizeDoc) : []);
+      setMessages(Array.isArray(msgsData) ? msgsData.map(normalizeMsg) : []);
       setInvoices(Array.isArray(invData) ? invData : []);
     }).catch(() => {}).finally(() => setLoading(false));
+
   }, [router]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
