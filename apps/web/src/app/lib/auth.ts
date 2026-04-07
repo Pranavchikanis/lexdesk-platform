@@ -12,7 +12,7 @@ export interface AuthUser {
 const TOKEN_KEY = "lex_access_token";
 const USER_KEY = "lex_user";
 
-export const AUTH_API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+export const AUTH_API = process.env.NEXT_PUBLIC_API_URL || "https://lexdesk-platform-production.up.railway.app";
 
 export function saveSession(token: string, user: AuthUser) {
   if (typeof window === "undefined") return;

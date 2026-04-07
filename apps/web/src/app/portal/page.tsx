@@ -46,10 +46,10 @@ export default function PortalPage() {
       
       // Fetch demo data concurrently
       Promise.all([
-        fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3005"}/demo-cases`).then(r => r.json()).catch(() => []),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3006"}/demo-documents`).then(r => r.json()).catch(() => []),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3007"}/demo-messages`).then(r => r.json()).catch(() => []),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3008"}/api/v1/billing/invoices?client_id=` + currentUser?.id).then(r => r.json()).catch(() => [])
+        fetch(`${process.env.NEXT_PUBLIC_API_URL || "https://lexdesk-platform-production.up.railway.app"}/demo-cases`).then(r => r.json()).catch(() => []),
+        fetch(`${process.env.NEXT_PUBLIC_API_URL || "https://lexdesk-platform-production.up.railway.app"}/demo-documents`).then(r => r.json()).catch(() => []),
+        fetch(`${process.env.NEXT_PUBLIC_API_URL || "https://lexdesk-platform-production.up.railway.app"}/demo-messages`).then(r => r.json()).catch(() => []),
+        fetch(`${process.env.NEXT_PUBLIC_API_URL || "https://lexdesk-platform-production.up.railway.app"}/api/v1/billing/invoices?client_id=` + currentUser?.id).then(r => r.json()).catch(() => [])
       ]).then(([casesData, docsData, msgsData, invData]) => {
         setCases(casesData);
         setDocs(docsData);
@@ -65,7 +65,7 @@ export default function PortalPage() {
     if (!newMessage.trim()) return;
     setSendingMessage(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3007"}/demo-messages`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "https://lexdesk-platform-production.up.railway.app"}/demo-messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: newMessage, sender: user?.full_name })

@@ -1,23 +1,26 @@
 {
-  "name": "lexdesk-platform",
-  "version": "1.0.0",
-  "private": true,
-  "packageManager": "npm@10.0.0",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
-  "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "db:push": "turbo run db:push",
-    "db:generate": "turbo run db:generate"
-  },
-  "devDependencies": {
-    "turbo": "^2.0.0",
-    "prettier": "^3.2.5",
-    "typescript": "^5.4.5"
-  }
+    "name":  "lexdesk-platform",
+    "version":  "1.0.0",
+    "private":  true,
+    "packageManager":  "npm@10.0.0",
+    "workspaces":  [
+                       "apps/*",
+                       "packages/*"
+                   ],
+    "scripts":  {
+                    "build":  "turbo run build",
+                    "dev":  "turbo run dev",
+                    "lint":  "turbo run lint",
+                    "format":  "prettier --write \"**/*.{ts,tsx,md}\"",
+                    "db:push":  "turbo run db:push",
+                    "db:generate":  "turbo run db:generate"
+                },
+    "engines": {
+        "node": ">=20.0.0"
+    },
+    "devDependencies":  {
+                            "turbo":  "^2.0.0",
+                            "prettier":  "^3.2.5",
+                            "typescript":  "^5.4.5"
+                        }
 }
