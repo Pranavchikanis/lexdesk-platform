@@ -198,6 +198,10 @@ app.post('/api/v1/intake/:caseId/conflict-check', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log('intake-service listening on port ' + PORT);
+if (require.main === module) {
+  app.listen(PORT, () => {
+  console.log('intake-service listening on port ' + PORT); 
+} else {
+  module.exports = app;
+}
 });

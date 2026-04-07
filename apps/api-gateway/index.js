@@ -46,6 +46,10 @@ for (const [path, target] of Object.entries(routes)) {
   );
 }
 
-app.listen(PORT, () => {
-  console.log(`API Gateway listening on port ${PORT}`);
+if (require.main === module) {
+  app.listen(PORT, () => {
+  console.log(`API Gateway listening on port ${PORT}`); 
+} else {
+  module.exports = app;
+}
 });

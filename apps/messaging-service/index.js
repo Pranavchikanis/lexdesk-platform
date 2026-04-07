@@ -147,6 +147,10 @@ app.post('/demo-messages', (req, res) => {
   }, 3000);
 });
 
-app.listen(PORT, () => {
-  console.log('messaging-service listening on port ' + PORT);
+if (require.main === module) {
+  app.listen(PORT, () => {
+  console.log('messaging-service listening on port ' + PORT); 
+} else {
+  module.exports = app;
+}
 });

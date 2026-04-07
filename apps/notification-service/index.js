@@ -42,6 +42,10 @@ app.post('/api/v1/notifications/dispatch', (req, res) => {
   res.status(202).json({ message: "QUEUED" });
 });
 
-app.listen(PORT, () => {
-  console.log('notification-service listening on port ' + PORT);
+if (require.main === module) {
+  app.listen(PORT, () => {
+  console.log('notification-service listening on port ' + PORT); 
+} else {
+  module.exports = app;
+}
 });

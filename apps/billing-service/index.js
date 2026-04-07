@@ -150,6 +150,10 @@ app.post('/api/v1/billing/invoices/:id/pay', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log('billing-service listening on port ' + PORT);
+if (require.main === module) {
+  app.listen(PORT, () => {
+  console.log('billing-service listening on port ' + PORT); 
+} else {
+  module.exports = app;
+}
 });

@@ -214,6 +214,10 @@ app.get('/demo-dashboard-stats', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log('case-service listening on port ' + PORT);
+if (require.main === module) {
+  app.listen(PORT, () => {
+  console.log('case-service listening on port ' + PORT); 
+} else {
+  module.exports = app;
+}
 });

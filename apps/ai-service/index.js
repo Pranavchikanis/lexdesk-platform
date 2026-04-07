@@ -58,10 +58,6 @@ app.post('/api/v1/ai/chat', async (req, res) => {
   }
 });
 
-if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log('ai-service listening on port ' + PORT);
-  });
-} else {
-  module.exports = app;
-}
+
+
+module.exports = app;

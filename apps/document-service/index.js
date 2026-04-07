@@ -105,6 +105,10 @@ app.post('/demo-upload', (req, res) => {
   res.status(201).json(newDoc);
 });
 
-app.listen(PORT, () => {
-  console.log('document-service listening on port ' + PORT);
+if (require.main === module) {
+  app.listen(PORT, () => {
+  console.log('document-service listening on port ' + PORT); 
+} else {
+  module.exports = app;
+}
 });

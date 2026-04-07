@@ -51,10 +51,6 @@ app.patch('/api/v1/admin/testimonials/:id/approve', async (req, res) => {
   }
 });
 
-if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log('admin-service listening on port ' + PORT);
-  });
-} else {
-  module.exports = app;
-}
+
+
+module.exports = app;

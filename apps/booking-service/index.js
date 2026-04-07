@@ -82,6 +82,10 @@ app.post('/api/v1/booking/payments/verify', async (req, res) => {
   res.status(200).send("OK");
 });
 
-app.listen(PORT, () => {
-  console.log('booking-service listening on port ' + PORT);
+if (require.main === module) {
+  app.listen(PORT, () => {
+  console.log('booking-service listening on port ' + PORT); 
+} else {
+  module.exports = app;
+}
 });

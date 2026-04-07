@@ -208,10 +208,6 @@ app.get('/api/v1/auth/validate-token', (req, res) => {
   }
 });
 
-if (require.main === module) {
-  app.listen(PORT, () => {
-  console.log(`Auth Service listening on port ${PORT}`);
-});
-} else {
-  module.exports = app;
-}
+
+
+module.exports = app;

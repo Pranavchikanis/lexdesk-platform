@@ -73,6 +73,10 @@ app.post('/api/v1/cms/testimonials', async (req, res) => {
 
 // Other endpoints (Blog, Practice Areas, Fees) stubbed out for brevity...
 
-app.listen(PORT, () => {
-  console.log('public-service listening on port ' + PORT);
+if (require.main === module) {
+  app.listen(PORT, () => {
+  console.log('public-service listening on port ' + PORT); 
+} else {
+  module.exports = app;
+}
 });
