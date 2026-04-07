@@ -245,7 +245,7 @@ export default function Home() {
               <div style={s.logoIcon}><Scale size={18} color="#60a5fa" /></div>
               <span style={s.logoText}>LexDesk<span style={s.logoAccent}>.Law</span></span>
             </div>
-            <div style={{ display: "flex", gap: 36 }}>
+            <div className="nav-links-desktop" style={{ display: "flex", gap: 36 }}>
               {["Practice Areas", "Our Firm", "Testimonials", "Contact"].map(l => (
                 <a key={l} href={`#${l.toLowerCase().replace(" ", "-")}`} style={s.navLink} className="footer-link">{l}</a>
               ))}
@@ -259,7 +259,7 @@ export default function Home() {
 
         {/* ── Hero ── */}
         <div style={{ position: "relative", zIndex: 1 }}>
-          <div style={s.hero}>
+          <div style={s.hero} className="hero-container">
 
             {/* Left */}
             <motion.div style={s.heroLeft} variants={stagger} initial="hidden" animate="show">
@@ -270,12 +270,12 @@ export default function Home() {
                 </div>
               </motion.div>
 
-              <motion.h1 variants={fadeUp} style={s.h1}>
+              <motion.h1 variants={fadeUp} style={s.h1} className="hero-title">
                 Legal Clarity,<br />
                 <span style={s.h1Gradient}>Delivered Digitally.</span>
               </motion.h1>
 
-              <motion.p variants={fadeUp} style={s.tagline}>
+              <motion.p variants={fadeUp} style={s.tagline} className="hero-subtitle">
                 A modern approach to legal advocacy. Secure communication, transparent billing, and 24/7 access to your case files — all through your private Client Portal.
               </motion.p>
 
@@ -392,7 +392,7 @@ export default function Home() {
         {/* ── Practice Areas ── */}
         <div style={{ ...s.practiceSection, position: "relative", zIndex: 1 }} id="practice-areas">
           <div style={s.section}>
-            <div style={s.practiceInner}>
+            <div style={s.practiceInner} className="practice-container">
               <Reveal>
                 <div style={s.practiceLeft}>
                   <div style={s.sectionTag}>AREAS OF EXPERTISE</div>
@@ -424,7 +424,7 @@ export default function Home() {
                 <h2 style={s.sectionTitle}>Trusted by hundreds,<br /><span style={{ background: "linear-gradient(135deg, #fbbf24, #fb923c)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>loved by all.</span></h2>
               </div>
             </Reveal>
-            <div style={s.testimonialsGrid}>
+            <div style={s.testimonialsGrid} className="testimonials-grid">
               {testimonials.map(({ name, role, content, initials, color }, i) => (
                 <Reveal key={name} delay={i * 0.1}>
                   <div style={s.testimonialCard} className="testimonial-card">
