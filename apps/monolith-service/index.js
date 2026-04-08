@@ -62,7 +62,7 @@ app.get('/demo-messages', (req, res) => res.json(DEMO_MSGS));
 // ── Advocate Dashboard Demo Endpoints ──────────────────────────────────────
 
 const DEMO_ALL_CASES = [
-  { id: 'C-2026-001', title: 'Property Dispute', client: 'Rahul Sharma', status: 'ACTIVE', next_action: 'Hearing — Apr 14', urgency: 'HIGH' },
+  { id: 'C-2026-001', title: 'Property Dispute', client: 'Rahul Sharma', status: 'HEARING', next_action: 'Hearing — Apr 14', urgency: 'HIGH' },
   { id: 'C-2026-002', title: 'Consumer Complaint vs Apex Corp', client: 'Priya Mehta', status: 'DRAFTING', next_action: 'Draft Reply — Apr 18', urgency: 'MEDIUM' },
   { id: 'C-2026-003', title: 'Employment Dispute', client: 'Rahul Sharma', status: 'NEGOTIATION', next_action: 'Settlement Call — Apr 22', urgency: 'LOW' },
   { id: 'C-2026-004', title: 'Property Registration Dispute', client: 'Anjali Mehta', status: 'INTAKE', next_action: 'Initial Consultation', urgency: 'MEDIUM' },

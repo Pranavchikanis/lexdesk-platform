@@ -289,7 +289,7 @@ export default function AdvocateDashboard() {
                     
                     <div style={s.kanbanBoard}>
                       {KANBAN_STAGES.map(stage => {
-                        const stageCases = allCases.filter(c => c.stage === stage);
+                        const stageCases = allCases.filter(c => c.status === stage);
                         const colors: any = { "INTAKE": "#94a3b8", "DRAFTING": "#fbbf24", "NEGOTIATION": "#38bdf8", "HEARING": "#c084fc", "CLOSED": "#34d399" };
                         return (
                           <div key={stage} style={s.kanbanCol}>
@@ -353,7 +353,7 @@ export default function AdvocateDashboard() {
                                 <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>{iq.visitor_email}</div>
                               </td>
                               <td style={s.td}>{iq.matter_type}</td>
-                              <td style={s.td}>{new Date(iq.received_at).toLocaleDateString()}</td>
+                              <td style={s.td}>{new Date(iq.created_at || iq.received_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
                               <td style={s.td}>
                                 <span style={s.tag(iq.urgency === "HIGH" ? "#ef4444" : "#f59e0b")}>{iq.urgency}</span>
                               </td>
