@@ -372,7 +372,139 @@ export default function AdvocateDashboard() {
                     </div>
                   </div>
                 )}
-                
+
+                {/* ── CLIENTS ── */}
+                {activeTab === "clients" && (() => {
+                  const DEMO_CLIENTS = [
+                    { id: 'CL-001', name: 'Rahul Sharma', email: 'rahul.sharma@example.com', phone: '+91 98765 11111', cases: 2, active: 2, city: 'Pune', avatar: 'RS', joined: '2025-11-12' },
+                    { id: 'CL-002', name: 'Priya Mehta', email: 'priya.mehta@example.com', phone: '+91 87654 22222', cases: 1, active: 1, city: 'Mumbai', avatar: 'PM', joined: '2026-01-05' },
+                    { id: 'CL-003', name: 'Anjali Mehta', email: 'anjali@example.com', phone: '+91 98765 43210', cases: 1, active: 0, city: 'Pune', avatar: 'AM', joined: '2026-03-20' },
+                    { id: 'CL-004', name: 'Vikram Singh', email: 'vikram@example.com', phone: '+91 87654 32109', cases: 1, active: 1, city: 'Delhi', avatar: 'VS', joined: '2026-04-01' },
+                  ];
+                  return (
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 32 }}>
+                        <div>
+                          <div style={s.pageTitle}>Client Registry</div>
+                          <div style={s.pageSub}>All clients on record with active and historical matters.</div>
+                        </div>
+                        <div style={{ display: 'flex', gap: 12 }}>
+                          <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <Users size={14} color="rgba(255,255,255,0.4)" />
+                            <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>{DEMO_CLIENTS.length} Clients</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 16 }}>
+                        {DEMO_CLIENTS.map(cl => (
+                          <div key={cl.id} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, padding: 22, transition: 'all 0.2s', cursor: 'pointer' }}
+                            onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(139,92,246,0.3)'; (e.currentTarget as HTMLDivElement).style.background = 'rgba(139,92,246,0.04)'; }}
+                            onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(255,255,255,0.07)'; (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.02)'; }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 18 }}>
+                              <div style={{ width: 46, height: 46, borderRadius: '50%', background: 'linear-gradient(135deg, #8b5cf6, #d946ef)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 700, color: '#fff', flexShrink: 0 }}>
+                                {cl.avatar}
+                              </div>
+                              <div style={{ flex: 1 }}>
+                                <div style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>{cl.name}</div>
+                                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>{cl.city} · Client since {new Date(cl.joined).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}</div>
+                              </div>
+                              <div style={{ background: cl.active > 0 ? 'rgba(52,211,153,0.1)' : 'rgba(255,255,255,0.06)', color: cl.active > 0 ? '#34d399' : 'rgba(255,255,255,0.3)', fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 9999 }}>
+                                {cl.active > 0 ? `${cl.active} ACTIVE` : 'CLOSED'}
+                              </div>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 16 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>
+                                <MessageSquare size={12} /> {cl.email}
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>
+                                <CheckSquare size={12} /> {cl.phone}
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
+                                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>{cl.cases} total case{cl.cases !== 1 ? 's' : ''}</span>
+                                <button style={{ background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.2)', color: '#c084fc', fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 6, cursor: 'pointer' }}>
+                                  View Files
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* ── CALENDAR ── */}
+                {activeTab === "calendar" && (() => {
+                  const HEARINGS = [
+                    { id: 'H1', title: 'Property Dispute — Pune District Court', client: 'Rahul Sharma', date: '2026-04-14', time: '10:30 AM', type: 'HEARING', urgency: 'HIGH', caseId: 'C-2026-001', court: 'Pune District Court, Court No. 4' },
+                    { id: 'H2', title: 'Consumer Complaint vs Apex Corp', client: 'Priya Mehta', date: '2026-04-18', time: '02:00 PM', type: 'FILING', urgency: 'MEDIUM', caseId: 'C-2026-002', court: 'NCDRC, New Delhi' },
+                    { id: 'H3', title: 'Employment Dispute Settlement Call', client: 'Rahul Sharma', date: '2026-04-22', time: '11:00 AM', type: 'NEGOTIATION', urgency: 'LOW', caseId: 'C-2026-003', court: 'Labour Court, Mumbai' },
+                    { id: 'H4', title: 'Cheque Bounce — Cross-examination', client: 'Vikram Singh', date: '2026-04-30', time: '03:30 PM', type: 'HEARING', urgency: 'HIGH', caseId: 'C-2026-005', court: 'Magistrate Court, Delhi' },
+                    { id: 'H5', title: 'Property Registration — Consultation', client: 'Anjali Mehta', date: '2026-05-05', time: '10:00 AM', type: 'CONSULTATION', urgency: 'MEDIUM', caseId: 'C-2026-004', court: 'Office' },
+                  ];
+                  const typeColor: any = { 'HEARING': '#c084fc', 'FILING': '#fbbf24', 'NEGOTIATION': '#38bdf8', 'CONSULTATION': '#34d399' };
+                  const urgColor: any = { 'HIGH': '#ef4444', 'MEDIUM': '#f59e0b', 'LOW': '#94a3b8' };
+                  return (
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 32 }}>
+                        <div>
+                          <div style={s.pageTitle}>Hearing Calendar</div>
+                          <div style={s.pageSub}>Upcoming hearings, filings, and deadlines across all active matters.</div>
+                        </div>
+                        <div style={{ background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 10, padding: '8px 16px', fontSize: 13, color: '#c084fc', fontWeight: 600 }}>
+                          {HEARINGS.length} upcoming events
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                        {HEARINGS.map(h => {
+                          const dateObj = new Date(h.date);
+                          const isThisWeek = (dateObj.getTime() - Date.now()) < 7 * 24 * 3600 * 1000;
+                          return (
+                            <div key={h.id} style={{ display: 'flex', gap: 0, background: 'rgba(255,255,255,0.02)', border: `1px solid ${isThisWeek ? 'rgba(192,132,252,0.2)' : 'rgba(255,255,255,0.06)'}`, borderRadius: 16, overflow: 'hidden', transition: 'all 0.2s' }}>
+                              {/* Date block */}
+                              <div style={{ width: 80, background: isThisWeek ? 'rgba(139,92,246,0.1)' : 'rgba(255,255,255,0.03)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '16px 8px', flexShrink: 0, borderRight: '1px solid rgba(255,255,255,0.05)' }}>
+                                <div style={{ fontSize: 11, fontWeight: 700, color: isThisWeek ? '#c084fc' : 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                  {dateObj.toLocaleDateString('en-IN', { month: 'short' })}
+                                </div>
+                                <div style={{ fontSize: 28, fontWeight: 800, color: isThisWeek ? '#c084fc' : '#fff', lineHeight: 1.1 }}>
+                                  {dateObj.getDate()}
+                                </div>
+                                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>
+                                  {dateObj.toLocaleDateString('en-IN', { weekday: 'short' })}
+                                </div>
+                              </div>
+
+                              {/* Event details */}
+                              <div style={{ flex: 1, padding: '14px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+                                <div style={{ flex: 1 }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                                    <span style={{ fontSize: 10, fontWeight: 700, color: typeColor[h.type] || '#fff', background: `${typeColor[h.type]}18`, padding: '2px 8px', borderRadius: 9999 }}>{h.type}</span>
+                                    <span style={{ fontSize: 10, fontWeight: 700, color: urgColor[h.urgency], background: `${urgColor[h.urgency]}15`, padding: '2px 8px', borderRadius: 9999 }}>{h.urgency}</span>
+                                    {isThisWeek && <span style={{ fontSize: 10, fontWeight: 700, color: '#fbbf24', background: 'rgba(251,191,36,0.12)', padding: '2px 8px', borderRadius: 9999 }}>⚡ THIS WEEK</span>}
+                                  </div>
+                                  <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', marginBottom: 4 }}>{h.title}</div>
+                                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
+                                    <span style={{ marginRight: 12 }}>👤 {h.client}</span>
+                                    <span style={{ marginRight: 12 }}>🏛️ {h.court}</span>
+                                    <span>🕐 {h.time}</span>
+                                  </div>
+                                </div>
+                                <div style={{ flexShrink: 0 }}>
+                                  <button style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.7)', fontSize: 11, fontWeight: 600, padding: '6px 12px', borderRadius: 8, cursor: 'pointer' }}>
+                                    Open Case
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 {/* ── BILLING & INVOICING ── */}
                 {activeTab === "billing" && (
                   <div>
