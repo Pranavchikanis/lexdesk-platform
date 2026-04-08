@@ -59,6 +59,33 @@ app.get('/demo-documents', (req, res) => res.json(DEMO_DOCS));
 
 app.get('/demo-messages', (req, res) => res.json(DEMO_MSGS));
 
+// ── Advocate Dashboard Demo Endpoints ──────────────────────────────────────
+
+const DEMO_ALL_CASES = [
+  { id: 'C-2026-001', title: 'Property Dispute', client: 'Rahul Sharma', status: 'ACTIVE', next_action: 'Hearing — Apr 14', urgency: 'HIGH' },
+  { id: 'C-2026-002', title: 'Consumer Complaint vs Apex Corp', client: 'Priya Mehta', status: 'DRAFTING', next_action: 'Draft Reply — Apr 18', urgency: 'MEDIUM' },
+  { id: 'C-2026-003', title: 'Employment Dispute', client: 'Rahul Sharma', status: 'NEGOTIATION', next_action: 'Settlement Call — Apr 22', urgency: 'LOW' },
+  { id: 'C-2026-004', title: 'Property Registration Dispute', client: 'Anjali Mehta', status: 'INTAKE', next_action: 'Initial Consultation', urgency: 'MEDIUM' },
+  { id: 'C-2026-005', title: 'Cheque Bounce — Section 138', client: 'Vikram Singh', status: 'HEARING', next_action: 'Cross-examination — Apr 30', urgency: 'HIGH' },
+];
+
+const DEMO_INQUIRIES = [
+  { id: 'INQ-001', visitor_name: 'Anjali Mehta', visitor_email: 'anjali@example.com', visitor_phone: '+91 98765 43210', matter_type: 'PROPERTY', description: 'Dispute regarding inheritance of ancestral property in Pune.', urgency: 'HIGH', status: 'PENDING', created_at: new Date(Date.now() - 3600000).toISOString() },
+  { id: 'INQ-002', visitor_name: 'Vikram Singh', visitor_email: 'vikram@example.com', visitor_phone: '+91 87654 32109', matter_type: 'CRIMINAL', description: 'Cheque bounce case — Section 138 NI Act.', urgency: 'HIGH', status: 'PENDING', created_at: new Date(Date.now() - 7200000).toISOString() },
+];
+
+app.get('/demo-dashboard-stats', (req, res) => res.json({
+  active_cases: 3,
+  pending_intakes: 2,
+  upcoming_hearings: 3,
+  monthly_revenue: '₹1,25,000',
+}));
+
+app.get('/demo-all-cases', (req, res) => res.json(DEMO_ALL_CASES));
+
+app.get('/demo-inquiries', (req, res) => res.json({ inquiries: DEMO_INQUIRIES }));
+
+
 app.post('/demo-messages', (req, res) => {
   const { content, sender } = req.body;
   const msg = { id: `m${Date.now()}`, content, sender: sender || 'Client', role: 'CLIENT', created_at: new Date().toISOString(), read: true };

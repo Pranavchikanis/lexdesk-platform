@@ -195,7 +195,7 @@ export default function PortalPage() {
   }
 
   const activeCases = cases.filter(c => c.status === "ACTIVE").length;
-  const unreadMsgs = messages.filter(m => m.read === false).length;
+  const unreadMsgs = messages.filter(m => m.unread).length;
   const pendingAmount = invoices.reduce((acc, inv) => acc + (inv.total_inr - inv.amount_paid_inr), 0);
   const totalBilled = invoices.reduce((acc, inv) => acc + inv.total_inr, 0);
   const amountPaid = invoices.reduce((acc, inv) => acc + inv.amount_paid_inr, 0);
